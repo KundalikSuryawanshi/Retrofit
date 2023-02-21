@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.kundalik.retrofit.adapter.PostAdapter
+import com.kundalik.retrofit.model.Post
 import com.kundalik.retrofit.utils.repository.Repository
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -27,7 +28,8 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
         viewModel.getCustomPosts2(2, "id", "asc")
-        viewModel.myCustomPosts2.observe(this, Observer {response ->
+
+        viewModel.myCustomPosts2.observe(this, Observer { response ->
 
             if (response.isSuccessful) {
                 response.body()?.let { postAdapter.setData(it) }
@@ -35,6 +37,22 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
             }
         })
+
+        // post request
+        val myPost = Post("programming is thinking not a typing", 2, "android application", 2)
+        viewModel.pushPost(myPost)
+        viewModel.myResponse.observe(this, Observer {response ->
+            if (response.isSuccessful) {
+                Log.d("Main", response.body().toString())
+                Log.d("Main", response.code().toString())
+                Log.d("Main", response.message().toString())
+            } else {
+                Toast.makeText(this, response.code(), Toast.LENGTH_SHORT).show()
+                //201 response code indicate that request has succeed.
+            }
+        })
+
+        viewModel.pushPost2(2, 2, "android developer", "keep working hard")
 
     }
 
